@@ -1,0 +1,5 @@
+{
+  "js/gateway_selector_settings.js": [
+    "gateway_selector/doctype/gateway_selector_settings/gateway_selector_settings.js"
+  ]
+}

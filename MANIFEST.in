@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include gateway_selector *.css
+recursive-include gateway_selector *.csv
+recursive-include gateway_selector *.html
+recursive-include gateway_selector *.ico
+recursive-include gateway_selector *.js
+recursive-include gateway_selector *.json
+recursive-include gateway_selector *.md
+recursive-include gateway_selector *.png
+recursive-include gateway_selector *.py
+recursive-include gateway_selector *.svg
+recursive-include gateway_selector *.txt
+recursive-exclude gateway_selector *.pyc
