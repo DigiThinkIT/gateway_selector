@@ -1,15 +1,20 @@
-<h2>Select Payment Method</h2>
-<div class="row">
-{% for gateway in gateways %}
+<div id="gateway-selector-options">
+  <h2>Select Payment Method</h2>
+  <div class="row">
+    {% for gateway in gateways %}
 
-<div class="field custom col-sm-6">
-  <label class="radioctrl">
-    <img src="{{gateway.data.icon}}"/>
-    <input type="radio" name="gateway_selector_option" value="{{ gateway.name }}" {% if gateway.data.is_default %}checked="checked"{% endif %}/>
-    <span class="label">{{ gateway.data.label }}</span>
-  </label>
-</div>
+    <div class="field custom col-sm-6">
+      <label class="radioctrl">
+        <img src="{{gateway.data.icon}}"/>
+        <input type="radio" name="gateway_selector_option" value="{{ gateway.name }}" {% if gateway.data.is_default %}checked="checked"{% endif %}/>
+        <span class="label">{{ gateway.data.label }}</span>
+      </label>
+    </div>
 
-{% endfor %}
+    {% endfor %}
+  </div>
+  <div id="gateway-selector-forms" class="row"></div>
+  <div class="text-center row" id="gateway-selector-actions">
+    <button id="gateway-selector-continue" class="btn btn-default btn-primary">Submit Payment</button>
+  </div>
 </div>
-<div id="gateway-selector-forms"></div>

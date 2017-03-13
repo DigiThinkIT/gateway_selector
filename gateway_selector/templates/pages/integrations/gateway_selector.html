@@ -9,7 +9,7 @@
 	{% include "templates/includes/integrations/gateway_selector/form.js" %}
 	var proxy_gateway = new frappe.integration_service.gateway_selector_gateway();
 	console.log(proxy_gateway);
-	proxy_gateway.form('{{proxy.name}}');
+	proxy_gateway.form({{ data|json }});
 </script>
 
 {% for gateway in gateways %}
@@ -26,18 +26,18 @@
 		<div class="col-md-6 col-md-push-6 nopadding">
 			<h2>Payment Details</h2>
 			<div class="row">
-				<div class="col-xs-12">{{ title }}</div>
+				<div class="col-xs-12">{{ data.title }}</div>
 			</div>
 			<div class="row">
-				<div class="col-xs-12">{{ description }}</div>
+				<div class="col-xs-12">{{ data.description }}</div>
 			</div>
 			<div class="row">
 				<div class="col-xs-8">Reference</div>
-				<div class="col-xs-4">{{ order_id }}</div>
+				<div class="col-xs-4">{{ data.order_id }}</div>
 			</div>
 			<div class="row">
 				<div class="col-xs-8">Total Amount</div>
-				<div class="col-xs-4">{{ amount }}</div>
+				<div class="col-xs-4">{{ data.amount }}</div>
 			</div>
 			<div class="row">
 				<div class="col-xs-12" id="gateway-error">

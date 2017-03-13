@@ -8,8 +8,10 @@ from frappe.model.document import Document
 
 class GatewaySelectorProxy(Document):
 
-	def on_payment_authorized(payment_status):
-		return frappe.get_doc(
+	def on_payment_authorized(self, payment_status):
+		result = frappe.get_doc(
 			self.reference_doctype,
 			self.reference_docname).run_method("on_payment_authorized",
 			payment_status)
+
+		return result

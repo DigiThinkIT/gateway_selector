@@ -2,3 +2,21 @@
 .gateway-selector-form {
 
 }
+
+#gateway-selector-options {
+  display: none;
+}
+
+#gateway-selector-actions {
+  margin-top: 1em;
+}
+
+#gateway-selector-continue.paypal {
+  display: inline-block;
+  background: url(https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-medium.png) center center no-repeat transparent;
+  width: 170px;
+  height: 32px;
+  text-indent: -10000000em;
+  overflow: hidden;
+  padding: 0;
+}

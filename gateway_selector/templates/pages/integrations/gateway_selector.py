@@ -5,7 +5,7 @@ from frappe import _
 from frappe.utils import flt, cint
 from frappe.utils.formatters import format_value
 from frappe.integration_broker.doctype.integration_service.integration_service import get_integration_controller
-from gateway_selector.gateway_selector.doctype.gateway_selector_settings.gateway_selector_settings import is_gateway_embedable, get_gateways
+from gateway_selector.gateway_selector.doctype.gateway_selector_settings.gateway_selector_settings import is_gateway_embedable, build_embed_context
 
 import json
 from datetime import datetime
@@ -38,11 +38,9 @@ def get_context(context):
         raise frappe.Redirect
 
     if proxy_name and proxy:
-        for key in expected_keys:
-            context[key] = proxy.get(key)
+        build_embed_context(context)
+        context["data"] = { key: proxy.get(key) for key in expected_keys }
 
-        context["proxy"] = proxy
-        context["gateways"] = get_gateways()
     else:
         frappe.redirect_to_message(_('Some information is missing'), _(
             'Looks like someone sent you to an incomplete URL. Please ask them to look into it.'))

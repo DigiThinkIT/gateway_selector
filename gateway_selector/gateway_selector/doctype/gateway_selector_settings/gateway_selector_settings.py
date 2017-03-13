@@ -65,19 +65,49 @@ def get_gateway_embed_form(name):
     return controller.get_embed_form()
 
 @frappe.whitelist(allow_guest=True)
+def get_url_from_gateway(gateway, data):
+    gateway_selector = get_integration_controller("Gateway Selector")
+
+    for g in gateway_selector.gateways:
+        if g.service.replace(' ', '_').lower() == gateway:
+            gateway_name = g.service
+            break
+    else:
+        gateway_name = None
+
+    controller = get_integration_controller(gateway_name)
+    # payment_details = {
+    #     "amount": proxy.get("amount"),
+    #     "title": proxy.get("title"),
+    #     "description": proxy.get("description"),
+    #     "reference_doctype": "Gateway Selector Proxy",
+    #     "reference_docname": proxy.name,
+    #     "payer_email": proxy.get("payer_email"),
+    #     "payer_name": proxy.get("payer_name"),
+    #     "order_id": proxy.get("order_id"),
+    #     "currency": proxy.get("currency")
+    # }
+
+    return controller.get_payment_url(**data)
+
+@frappe.whitelist(allow_guest=True)
 def get_gateways():
     gateway_selector = get_integration_controller("Gateway Selector")
     gateways = []
     for gateway in gateway_selector.gateways:
-        gtwy = {
+        payload = {
             "name": gateway.service.replace(' ', '_').lower(),
             "data": { key: gateway.get(key) for key in ['label', 'icon', 'service', 'is_default'] },
             "is_embedable": is_gateway_embedable(gateway.service)
         }
 
-        if gtwy["is_embedable"]:
-            gtwy["embed_form"] = get_gateway_embed_form(gateway.service)
+        if payload["is_embedable"]:
+            payload["embed_form"] = get_gateway_embed_form(gateway.service)
 
-        gateways.append(gtwy)
+        gateways.append(payload)
 
     return gateways
+
+def build_embed_context(context):
+    context["data"] = {}
+    context["gateways"] = get_gateways()
