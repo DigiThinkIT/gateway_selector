@@ -4,6 +4,7 @@
 
 from __future__ import unicode_literals
 import frappe
+from frappe import _dict
 from frappe.model.document import Document
 from frappe.utils import get_url, call_hook_method, cint, flt
 from urllib import urlencode
@@ -56,16 +57,41 @@ def get_service_details():
         </div>
     """
 
+def get_awc_gateway_form():
+    """This is the Gateway Selector embed form used by awc to embed itself on
+    the cart's frontend"""
+
+    context = _dict({
+        "source": "templates/includes/integrations/gateway_selector/embed.html",
+        "submit_source": "templates/includes/integrations/gateway_selector/submit.html"
+    })
+
+    build_embed_context(context)
+
+    return {
+        "form": frappe.render_template(context.source, context),
+        "submit": frappe.render_template(context.submit_source, context),
+        "styles": context["gateway_styles"],
+        "scripts": context["gateway_scripts"],
+        "js_api_factory": "frappe.integration_service.gateway_selector_gateway"
+    }
+
 def is_gateway_embedable(name):
+    """Returns True if the the gateway supports get_embed_form api"""
+
     controller = get_integration_controller(name)
     return hasattr(controller, "is_embedable") and controller.is_embedable
 
 def get_gateway_embed_form(name):
+    """Gets the gateway's embedable form information"""
+
     controller = get_integration_controller(name)
     return controller.get_embed_form()
 
 @frappe.whitelist(allow_guest=True)
 def get_url_from_gateway(gateway, data):
+    """Gets the gateway url when deferring gateways that can not be embeded"""
+
     gateway_selector = get_integration_controller("Gateway Selector")
 
     for g in gateway_selector.gateways:
@@ -76,22 +102,13 @@ def get_url_from_gateway(gateway, data):
         gateway_name = None
 
     controller = get_integration_controller(gateway_name)
-    # payment_details = {
-    #     "amount": proxy.get("amount"),
-    #     "title": proxy.get("title"),
-    #     "description": proxy.get("description"),
-    #     "reference_doctype": "Gateway Selector Proxy",
-    #     "reference_docname": proxy.name,
-    #     "payer_email": proxy.get("payer_email"),
-    #     "payer_name": proxy.get("payer_name"),
-    #     "order_id": proxy.get("order_id"),
-    #     "currency": proxy.get("currency")
-    # }
 
     return controller.get_payment_url(**data)
 
 @frappe.whitelist(allow_guest=True)
 def get_gateways():
+    """Gets a list of gateways that can be selected and their embedding information"""
+
     gateway_selector = get_integration_controller("Gateway Selector")
     gateways = []
     for gateway in gateway_selector.gateways:
@@ -109,5 +126,16 @@ def get_gateways():
     return gateways
 
 def build_embed_context(context):
+    """Convenience method that adds gateway information for a page's context"""
+
     context["data"] = {}
-    context["gateways"] = get_gateways()
+    gateways = get_gateways()
+
+    context["gateway_scripts"] = ['/assets/js/gateway_selector_embed.js']
+    context["gateway_styles"] = ['/assets/css/gateway_selector_embed.css']
+    context["gateways"] = gateways
+
+    for gateway in gateways:
+        if gateway.get('embed_form'):
+            context["gateway_scripts"].append(gateway.get('embed_form').get("script_url"))
+            context["gateway_styles"].append(gateway.get('embed_form').get("style_url"))

@@ -18,6 +18,9 @@ app_include_js = "/assets/js/gateway_selector_settings.js"
 website_route_rules = [
 	{ "from_route": "/integrations/gateway_selector/<name>", "to_route": "integrations/gateway_selector" }
 ]
+
+awc_gateway_form_provider = "gateway_selector.gateway_selector.doctype.gateway_selector_settings.gateway_selector_settings.get_awc_gateway_form"
+
 # Includes in <head>
 # ------------------
 

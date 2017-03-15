@@ -5,19 +5,15 @@
 {%- block header -%}{% endblock %}
 
 {% block script %}
-<script>
-	{% include "templates/includes/integrations/gateway_selector/form.js" %}
-	var proxy_gateway = new frappe.integration_service.gateway_selector_gateway();
-	console.log(proxy_gateway);
-	proxy_gateway.form({{ data|json }});
-</script>
 
-{% for gateway in gateways %}
-  {% if gateway.embed_form %}
-    <script src="{{gateway.embed_form.script_url}}" type="text/javascript"></script>
-  {% endif %}
+{% for script in gateway_scripts %}
+  <script src="{{script}}" type="text/javascript"></script>
 {% endfor %}
 
+<script>
+	var proxy_gateway = new frappe.integration_service.gateway_selector_gateway();
+	proxy_gateway.form({{ data|json }});
+</script>
 {% endblock %}
 
 {%- block page_content -%}
@@ -52,15 +48,12 @@
 {% endblock %}
 
 {% block style %}
-<style>
-	header, footer {
-		display: none;
-	}
-	{% include "templates/includes/integrations/gateway_selector/select.css" %}
-</style>
-{% for gateway in gateways %}
-  {% if gateway.embed_form %}
-    <link href="{{gateway.embed_form.style_url}}" type="text/css" rel="stylesheet"/>
-  {% endif %}
-{% endfor %}
+	<style>
+		header, footer {
+			display: none;
+		}
+	</style>
+	{% for style in gateway_styles %}
+	  <link href="{{style}}" type="text/css" rel="stylesheet"/>
+	{% endfor %}
 {% endblock %}

@@ -13,7 +13,7 @@ from datetime import datetime
 no_cache = 1
 no_sitemap = 1
 expected_keys = ('amount', 'title', 'description', 'reference_doctype', 'reference_docname',
-    'payer_name', 'payer_email', 'order_id')
+    'payer_name', 'payer_email', 'order_id', 'currency')
 
 def get_context(context):
     context.no_cache = 1
@@ -37,8 +37,9 @@ def get_context(context):
         frappe.local.flags.redirect_location = '/'
         raise frappe.Redirect
 
+    build_embed_context(context)
+
     if proxy_name and proxy:
-        build_embed_context(context)
         context["data"] = { key: proxy.get(key) for key in expected_keys }
 
     else:

@@ -1,5 +1,11 @@
 {
   "js/gateway_selector_settings.js": [
     "gateway_selector/doctype/gateway_selector_settings/gateway_selector_settings.js"
+  ],
+  "js/gateway_selector_embed.js": [
+    "public/js/base.js"
+  ],
+  "css/gateway_selector_embed.css": [
+    "public/css/select.css"
   ]
 }

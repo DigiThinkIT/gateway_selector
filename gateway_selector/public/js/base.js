@@ -4,6 +4,9 @@ frappe.provide("frappe.gateway_selector")
 /* stub class for non embedable gateways, this functions as simple redirection
 form implementation */
 frappe.gateway_selector._generic_embed = Class.extend({
+
+  on_validate: null,
+
   init: function(gateway) {
     this.gateway = gateway;
   },
@@ -109,13 +112,21 @@ frappe.integration_service.gateway_selector_gateway = Class.extend({
     })
 
     $('#gateway-selector-continue').click(function() {
-      base.process(base.request_data, function(err, data) {
+
+      if ( base.on_validate ) {
+        var err = base.on_validate(base.request_data);
         if ( err ) {
-
-        } else {
-
+          console.err(err);
         }
-      })
+      } else {
+        base.process(base.request_data, function(err, data) {
+          if ( err ) {
+            $('#gateway-selector-error').text(err);
+          } else {
+            window.location.href = data.redirect_to;
+          }
+        })
+      }
     })
 
   },
