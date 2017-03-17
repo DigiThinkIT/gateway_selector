@@ -35,7 +35,14 @@ frappe.gateway_selector._generic_embed = Class.extend({
    * Collects all authnet fields necessary to process payment
    */
   collect: function() {
-    // do nothing as this selector is meant to redirect to actual payment gateway
+  },
+
+  getSummary: function() {
+    return "You will be redirected to " + this.gateway.label + " to finalize payment.";
+  },
+
+  validate: function() {
+    return true;
   },
 
   process: function(data, callback) {
@@ -60,6 +67,7 @@ frappe.integration_service.gateway_selector_gateway = Class.extend({
   current_gateway: null,
 
   init: function() {
+    this._is_enabled = true;
   },
 
   process: function(overrides, callback) {
@@ -72,6 +80,10 @@ frappe.integration_service.gateway_selector_gateway = Class.extend({
   form: function(request_data) {
     var base = this;
     this.request_data = request_data;
+    if ( !this.request_data ) {
+      this.request_data = {};
+    }
+
     $(function() {
       frappe.call({
         method: "gateway_selector.gateway_selector.doctype.gateway_selector_settings.gateway_selector_settings.get_gateways",
@@ -113,10 +125,14 @@ frappe.integration_service.gateway_selector_gateway = Class.extend({
 
     $('#gateway-selector-continue').click(function() {
 
+      if ( !base._is_enabled ) {
+        return;
+      }
+
       if ( base.on_validate ) {
         var err = base.on_validate(base.request_data);
         if ( err ) {
-          console.err(err);
+          console.error(err);
         }
       } else {
         base.process(base.request_data, function(err, data) {
@@ -129,6 +145,32 @@ frappe.integration_service.gateway_selector_gateway = Class.extend({
       }
     })
 
+  },
+
+  enable: function(enabled) {
+    console.log("Enabled?", enabled)
+    this._is_enabled = enabled;
+    if ( enabled ) {
+      console.log($('#gateway-selector-continue'), enabled)
+      $('#gateway-selector-continue').removeClass('disabled');
+    } else {
+      console.log($('#gateway-selector-continue'), enabled)
+      $('#gateway-selector-continue').addClass('disabled');
+    }
+  },
+
+  validate: function() {
+    if ( this.current_gateway ) {
+      return this.current_gateway.validate();
+    }
+  },
+
+  getSummary: function() {
+    if ( this.current_gateway ) {
+      return this.current_gateway.getSummary();
+    }
+
+    return "- no payment information found -";
   },
 
   activate_gateway: function(name) {
