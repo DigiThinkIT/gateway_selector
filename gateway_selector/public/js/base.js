@@ -65,6 +65,7 @@ frappe.integration_service.gateway_selector_gateway = Class.extend({
 
   services: {},
   current_gateway: null,
+  on_process: null,
 
   init: function() {
     this._is_enabled = true;
@@ -130,7 +131,7 @@ frappe.integration_service.gateway_selector_gateway = Class.extend({
       }
 
       if ( base.on_validate ) {
-        var err = base.on_validate(base.request_data);
+        var err = base.on_process(base.request_data);
         if ( err ) {
           console.error(err);
         }
