@@ -5,8 +5,6 @@ frappe.provide("frappe.gateway_selector")
 form implementation */
 frappe.gateway_selector._generic_embed = Class.extend({
 
-  on_validate: null,
-
   init: function(gateway) {
     this.gateway = gateway;
   },
@@ -42,7 +40,7 @@ frappe.gateway_selector._generic_embed = Class.extend({
   },
 
   validate: function() {
-    return true;
+    return { valid: true, address: null };
   },
 
   process: function(data, callback) {
@@ -65,6 +63,7 @@ frappe.integration_service.gateway_selector_gateway = Class.extend({
 
   services: {},
   current_gateway: null,
+  current_gateway_name: null,
   on_process: null,
 
   init: function() {
@@ -130,8 +129,8 @@ frappe.integration_service.gateway_selector_gateway = Class.extend({
         return;
       }
 
-      if ( base.on_validate ) {
-        var err = base.on_process(base.request_data);
+      if ( base.on_process ) {
+        var err = base.on_process(base.request_data, base.current_gateway_name);
         if ( err ) {
           console.error(err);
         }
@@ -186,8 +185,10 @@ frappe.integration_service.gateway_selector_gateway = Class.extend({
     if ( gateway ) {
       gateway.show();
       this.current_gateway = gateway;
+      this.current_gateway_name = name;
     } else {
       this.current_gateway = null;
+      this.current_gateway_name = null;
     }
 
     var $gateway_form = $('#gateway_option_' + name);
