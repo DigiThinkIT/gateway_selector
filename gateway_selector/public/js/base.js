@@ -66,8 +66,9 @@ frappe.integration_service.gateway_selector_gateway = Class.extend({
   current_gateway_name: null,
   on_process: null,
 
-  init: function() {
+  init: function(context) {
     this._is_enabled = true;
+		this._context = context;
   },
 
   process: function(overrides, callback) {
@@ -88,7 +89,9 @@ frappe.integration_service.gateway_selector_gateway = Class.extend({
       frappe.call({
         method: "gateway_selector.gateway_selector.doctype.gateway_selector_settings.gateway_selector_settings.get_gateways",
         freeze: 1,
-        args: {},
+        args: {
+					context: base._context
+				},
         callback: function(data) {
 
           for(var i=0; i < data.message.length; i++) {
