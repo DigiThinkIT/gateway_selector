@@ -151,13 +151,10 @@ frappe.integration_service.gateway_selector_gateway = Class.extend({
   },
 
   enable: function(enabled) {
-    console.log("Enabled?", enabled)
     this._is_enabled = enabled;
     if ( enabled ) {
-      console.log($('#gateway-selector-continue'), enabled)
       $('#gateway-selector-continue').removeClass('disabled');
     } else {
-      console.log($('#gateway-selector-continue'), enabled)
       $('#gateway-selector-continue').addClass('disabled');
     }
   },
