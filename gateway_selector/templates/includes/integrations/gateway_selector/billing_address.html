@@ -1,0 +1,66 @@
+<div id="gateway-selector-billing-form" class="awc-form">
+	<div class="row no-gutter">
+		<div class="col-sm-6">
+			<div class="field required">
+				<label for="billing_title">Title</label>
+				<input id="billing_title" name="title" placeholder="Title" data-type="title" />
+			</div>
+		</div>
+		<div class="col-sm-6">
+			<div class="field required">
+				<label for="billing_phone">Phone</label>
+				<input id="billing_phone" name="phone" placeholder="Contact Number" data-type="phone" />
+			</div>
+		</div>
+	</div>
+  <div class="row no-gutter">
+    <div class="col-sm-12">
+      <div class="field required">
+        <label for="billing_line1">Address</label>
+        <input id="billing_line1" name="address_1" placeholder="Address 1" data-type="address_1"/>
+      </div>
+    </div>
+  </div>
+  <div class="row no-gutter">
+    <div class="col-sm-12">
+      <div class="field">
+        <label for="billing_line2">Address 2</label>
+        <input id="billing_line2" name="address_2" placeholder="Address 2" data-type="address_2"/>
+      </div>
+    </div>
+  </div>
+  <div class="row no-gutter">
+    <div class="col-xs-6 nopad-right">
+      <div class="field required">
+        <label for="billing_city">City</label>
+        <input id="billing_city" name="city" placeholder="City" data-type="city"/>
+      </div>
+    </div>
+    <div class="col-xs-3 nopad-right">
+      <div class="field">
+        <label for="billing_state">State</label>
+        <input id="billing_state" name="state" placeholder="State" data-type="state"/>
+      </div>
+    </div>
+    <div class="col-xs-3 nopad-left">
+      <div class="field required">
+        <label for="billing_pincode">Postal Code</label>
+        <input id="billing_pincode" name="pincode" placeholder="Postal Code" data-type="pincode"/>
+      </div>
+    </div>
+  </div>
+  <div class="row no-gutter">
+    <div class="col-sm-12">
+      <div class="field required">
+        <label for="billing_country">Country</label>
+        <select id="billing_country" name="country" data-type="country">
+          <option selected>- Select Country -</option>
+          {% for country in billing_countries %}
+          <option value="{{country.name}}">{{country.country_name}}</option>
+          {% endfor %}
+        </select>
+        <span class="select-arrow glyphicon glyphicon-triangle-bottom"></span>
+      </div>
+    </div>
+  </div>
+</div>

@@ -14,6 +14,12 @@
 
     {% endfor %}
   </div>
-  
+
   <div id="gateway-selector-forms" class="row"></div>
+
+	<h2>Billing Address</h2>
+	<div class="row">
+		{% include "templates/includes/integrations/gateway_selector/billing_address.html" with context %}
+	</div>
+
 </div>
