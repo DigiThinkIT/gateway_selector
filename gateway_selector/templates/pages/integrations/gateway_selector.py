@@ -42,6 +42,18 @@ def get_context(context):
     if proxy_name and proxy:
         context["data"] = { key: proxy.get(key) for key in expected_keys }
 
+	context["billing_countries"] = [ x for x in frappe.get_list("Country", fields=["country_name", "name"], ignore_permissions=1) ]
+
+	default_country = frappe.get_value("System Settings", "System Settings", "country")
+	default_country_doc = next((x for x in context["billing_countries"] if x.name == default_country), None)
+
+	context["addresses"] = frappe.get_all("Address", filters={"email_id" : frappe.session.user, "address_type": "Billing"}, fields="*")
+
+	country_idx = context["billing_countries"].index(default_country_doc)
+	context["billing_countries"].pop(country_idx)
+	context["billing_countries"] = [default_country_doc] + context["billing_countries"]
+
+
     else:
         frappe.redirect_to_message(_('Some information is missing'), _(
             'Looks like someone sent you to an incomplete URL. Please ask them to look into it.'))

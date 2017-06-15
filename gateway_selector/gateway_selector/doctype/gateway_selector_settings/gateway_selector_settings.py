@@ -137,6 +137,19 @@ def build_embed_context(context):
 	context["data"] = {}
 	gateways = get_gateways()
 
+
+	# Build billing address context
+	context["billing_countries"] = [ x for x in frappe.get_list("Country", fields=["country_name", "name"], ignore_permissions=1) ]
+
+	default_country = frappe.get_value("System Settings", "System Settings", "country")
+	default_country_doc = next((x for x in context["billing_countries"] if x.name == default_country), None)
+
+	context["addresses"] = frappe.get_all("Address", filters={"email_id" : frappe.session.user, "address_type": "Billing"}, fields="*")
+
+	country_idx = context["billing_countries"].index(default_country_doc)
+	context["billing_countries"].pop(country_idx)
+	context["billing_countries"] = [default_country_doc] + context["billing_countries"]
+
 	context["gateway_scripts"] = ['/assets/js/gateway_selector_embed.js']
 	context["gateway_styles"] = ['/assets/css/gateway_selector_embed.css']
 	context["gateways"] = gateways

@@ -1,12 +1,97 @@
 frappe.provide("frappe.integration_service")
 frappe.provide("frappe.gateway_selector")
 
+frappe.gateway_selector.AddressFormProvider = Class.extend({
+	init: function($form) {
+		this.data = {};
+		this.$form = $form;
+
+		console.log("address form initialized")
+	},
+
+	form: function() {
+		var $form = this.$form;
+
+		var on_update = function() {
+				var field = {
+						name: $(this).attr('data-type'),
+						value: $(this).val()
+				};
+				$form.trigger('field-change', field);
+		}
+
+		$form.find('input[name="phone"]').change(on_update);
+		$form.find('input[name="title"]').change(on_update);
+		$form.find('input[name="address_1"]').change(on_update);
+		$form.find('input[name="address_2"]').change(on_update);
+		$form.find('input[name="city"]').change(on_update);
+		$form.find('input[name="state"]').change(on_update);
+		$form.find('input[name="pincode"]').change(on_update);
+		$form.find('select[name="country"]').change(on_update);
+
+	},
+
+	validate: function() {
+		var $form = this.$form;
+
+		//if ($form.attr('data-select') == 'true') {
+				this.data.phone = $form.find('input[name="phone"]').val();
+				this.data.title = $form.find('input[name="title"]').val();
+				this.data.address_1 = $form.find('input[name="address_1"]').val();
+				this.data.address_2 = $form.find('input[name="address_2"]').val();
+				this.data.city = $form.find('input[name="city"]').val();
+				this.data.state = $form.find('input[name="state"]').val();
+				this.data.pincode = $form.find('input[name="pincode"]').val();
+				this.data.country = $form.find('select[name="country"] option:checked').attr('value');
+		/*} else {
+				this.data.billing_address = $('div.selected').attr('data-name');
+				this.data.title = $('.selected span#title strong').text();
+				this.data.phone = $('.selected span#phone').text();
+				this.data.address_1 = $('.selected span#line1').text();
+				this.data.address_2 = $('.selected span#line2').text();
+				this.data.city = $('.selected span#city').text();
+				this.data.state = $('.selected span#state').text();
+				this.data.pincode = $('.selected span#postal_code').text();
+				this.data.country = $('.selected span#country').text();
+		}*/
+
+		$form.trigger('address_change', this.data);
+
+		var result = {
+				valid: true,
+				address: this.data
+		}
+
+		if (!this.data.title) {
+				result.valid = false;
+		}
+		if (!this.data.address_1) {
+				result.valid = false;
+		}
+		if (!this.data.city) {
+				result.valid = false;
+		}
+		if (!this.data.pincode) {
+				result.valid = false;
+		}
+		if (!this.data.country) {
+				result.valid = false;
+		}
+		if (!this.data.phone) {
+				result.valid = false;
+		}
+
+		return result;
+	}
+})
+
 /* stub class for non embedable gateways, this functions as simple redirection
 form implementation */
 frappe.gateway_selector._generic_embed = Class.extend({
 
-  init: function(gateway) {
+  init: function(gateway, addressForm) {
     this.gateway = gateway;
+		this.addressForm = addressForm;
   },
 
   /**
@@ -85,6 +170,8 @@ frappe.integration_service.gateway_selector_gateway = Class.extend({
       this.request_data = {};
     }
 
+		this.addressForm = new frappe.gateway_selector.AddressFormProvider($('#gateway-selector-billing-form'));
+
     $(function() {
       frappe.call({
         method: "gateway_selector.gateway_selector.doctype.gateway_selector_settings.gateway_selector_settings.get_gateways",
@@ -99,14 +186,14 @@ frappe.integration_service.gateway_selector_gateway = Class.extend({
             if ( gateway.is_embedable ) {
               $('#gateway-selector-forms').append('<div id="gateway_option_'+gateway.name+'">'+gateway.embed_form.form+'</div>');
               if ( frappe.gateway_selector[gateway.name + "_embed"] !== undefined ) {
-                base.services[gateway.name] = new frappe.gateway_selector[gateway.name + "_embed"]()
+                base.services[gateway.name] = new frappe.gateway_selector[gateway.name + "_embed"](base.addressForm)
               } else {
-                base.services[gateway.name] = new frappe.gateway_selector._generic_embed(gateway);
+                base.services[gateway.name] = new frappe.gateway_selector._generic_embed(gateway, base.addressForm);
               }
 
               $('#gateway_option_'+gateway.name).hide();
             } else {
-              base.services[gateway.name] = new frappe.gateway_selector._generic_embed(gateway);
+              base.services[gateway.name] = new frappe.gateway_selector._generic_embed(gateway, base.addressForm);
             }
           }
 
