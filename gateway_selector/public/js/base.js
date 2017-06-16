@@ -125,7 +125,7 @@ frappe.gateway_selector._generic_embed = Class.extend({
   },
 
   validate: function() {
-    return { valid: true, address: null };
+    return { valid: true, address: this.addressForm.validate().address };
   },
 
   process: function(data, callback) {

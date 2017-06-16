@@ -97,6 +97,9 @@ def get_gateway_embed_form(name, context={}):
 def get_url_from_gateway(gateway, data):
 	"""Gets the gateway url when deferring gateways that can not be embeded"""
 
+	if isinstance(data, unicode) or isinstance(data, str):
+		data = json.loads(data)
+
 	gateway_selector = get_integration_controller("Gateway Selector")
 
 	for g in gateway_selector.gateways:
