@@ -34,7 +34,7 @@ frappe.gateway_selector.AddressFormProvider = Class.extend({
 	validate: function() {
 		var $form = this.$form;
 
-		if ($form.attr('data-select') == 'true') {
+		if ($form.parent().attr('data-select') == 'true') {
 				this.data.phone = $form.find('input[name="phone"]').val();
 				this.data.title = $form.find('input[name="title"]').val();
 				this.data.address_1 = $form.find('input[name="address_1"]').val();
@@ -44,14 +44,13 @@ frappe.gateway_selector.AddressFormProvider = Class.extend({
 				this.data.pincode = $form.find('input[name="pincode"]').val();
 				this.data.country = $form.find('select[name="country"] option:checked').attr('value');
 		} else {
-				this.data.billing_address = $('div.selected').attr('data-name');
+				this.data.billing_address = $('#billing-addrs div.selected').attr('data-name');
 				this.data.title = $('#billing-addrs .selected span#title strong').text();
         this.data.phone = $('#billing-addrs .selected span#phone').text();
 				this.data.address_1 = $('#billing-addrs .selected span#line1').text();
 				this.data.address_2 = $('#billing-addrs .selected span#line2').text();
 				this.data.city = $('#billing-addrs .selected span#city').text();
 				this.data.state = $('#billing-addrs .selected span#state').text();
-				console.log(this.data.city);
 				this.data.pincode = $('#billing-addrs .selected span#postal_code').text();
 				this.data.country = $('#billing-addrs .selected span#country').text();
 		}
