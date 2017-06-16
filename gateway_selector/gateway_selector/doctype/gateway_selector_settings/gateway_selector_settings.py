@@ -144,7 +144,7 @@ def build_embed_context(context):
 	default_country = frappe.get_value("System Settings", "System Settings", "country")
 	default_country_doc = next((x for x in context["billing_countries"] if x.name == default_country), None)
 
-	context["addresses"] = frappe.get_all("Address", filters={"email_id" : frappe.session.user, "address_type": "Billing"}, fields="*")
+	context["addresses"] = frappe.get_all("Address", filters={"email_id" : frappe.session.user}, fields="*")
 
 	country_idx = context["billing_countries"].index(default_country_doc)
 	context["billing_countries"].pop(country_idx)

@@ -17,9 +17,14 @@
 
   <div id="gateway-selector-forms" class="row"></div>
 
-	<h2>Billing Address</h2>
-	<div class="row">
-		{% include "templates/includes/integrations/gateway_selector/billing_address.html" with context %}
-	</div>
+  <h2>Billing Address</h2>
+  <div class="row">
+    <div id="select-bill-addr">
+      {% include "templates/includes/integrations/gateway_selector/billing_address_select.html" with context %}
+    </div>
+    <div id="form-bill-addr" style="display: none;">
+      {% include "templates/includes/integrations/gateway_selector/billing_address.html" with context %}
+    </div>
+  </div>
 
 </div>
