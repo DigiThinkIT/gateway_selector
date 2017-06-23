@@ -16,6 +16,9 @@ expected_keys = ('amount', 'title', 'description', 'reference_doctype', 'referen
     'payer_name', 'payer_email', 'order_id', 'currency')
 
 def get_context(context):
+    if frappe.session.user=='Guest':
+		frappe.throw(_("You need to be logged in to access this page"), frappe.PermissionError)
+
     context.no_cache = 1
 
     # get request name from query string
