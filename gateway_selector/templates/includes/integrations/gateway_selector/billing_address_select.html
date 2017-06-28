@@ -3,10 +3,10 @@
     <div class="row">
         {% if not addresses %}
         <p>No address registered, add a new one.</p>
-        {% else %} 
-        <div style="height:50vh; overflow-y:auto;">
+        {% else %}
+        <div class="addresses-container">
         {% for address in addresses%}
-        <div class="col-md-12 col-sm-12" style="padding:0">
+        <div class="col-md-12 col-sm-12 address-item">
             <div class="well">
                 <div data-name="{{ address.name }}" class="addr" style="cursor: pointer">
                     <span id="title"><strong id="title"> {{ address.address_title }} </strong></strong><br>
@@ -24,7 +24,7 @@
                 </div>
             </div>
         </div>
-        {% endfor %} 
+        {% endfor %}
         </div
         >{% endif %}
         <button class="btn-primary btn-add-bill-addr">Add a New Billing Address</button>
