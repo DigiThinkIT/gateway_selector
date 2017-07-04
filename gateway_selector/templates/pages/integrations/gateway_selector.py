@@ -51,7 +51,7 @@ def get_context(context):
 	default_country = frappe.get_value("System Settings", "System Settings", "country")
 	default_country_doc = next((x for x in context["billing_countries"] if x.name == default_country), None)
 
-	context["addresses"] = frappe.get_all("Address", filters={"customer" : get_current_customer().name}, fields="*")
+	context["addresses"] = frappe.get_all("Address", filters={"customer" : get_current_customer().name, "disabled" : 0}, fields="*")
 
 	country_idx = context["billing_countries"].index(default_country_doc)
 	context["billing_countries"].pop(country_idx)
