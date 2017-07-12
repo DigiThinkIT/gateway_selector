@@ -68,8 +68,6 @@ def get_awc_gateway_form(context={}):
 		"submit_source": "templates/includes/integrations/gateway_selector/submit.html"
 	})
 
-	print(context)
-
 	context = _dict(context)
 	build_embed_context(context)
 
@@ -87,6 +85,13 @@ def is_gateway_embedable(name):
 
 	controller = get_integration_controller(name)
 	return hasattr(controller, "is_embedable") and controller.is_embedable
+
+def is_gateway_available(name, context):
+	controller = get_integration_controller(name)
+	if hasattr(controller, "is_available"):
+		return controller.is_available(context)
+
+	return True
 
 def get_gateway_embed_form(name, context={}):
 	"""Gets the gateway's embedable form information"""
@@ -122,16 +127,17 @@ def get_gateways(context="{}"):
 	gateway_selector = get_integration_controller("Gateway Selector")
 	gateways = []
 	for gateway in gateway_selector.gateways:
-		payload = {
-			"name": gateway.service.replace(' ', '_').lower(),
-			"data": { key: gateway.get(key) for key in ['label', 'icon', 'service', 'is_default'] },
-			"is_embedable": is_gateway_embedable(gateway.service)
-		}
+		if is_gateway_available(gateway.service, context):
+			payload = {
+				"name": gateway.service.replace(' ', '_').lower(),
+				"data": { key: gateway.get(key) for key in ['label', 'icon', 'service', 'is_default'] },
+				"is_embedable": is_gateway_embedable(gateway.service)
+			}
 
-		if payload["is_embedable"]:
-			payload["embed_form"] = get_gateway_embed_form(gateway.service, context=context)
+			if payload["is_embedable"]:
+				payload["embed_form"] = get_gateway_embed_form(gateway.service, context=context)
 
-		gateways.append(payload)
+			gateways.append(payload)
 
 	return gateways
 

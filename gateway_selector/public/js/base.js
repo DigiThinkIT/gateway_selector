@@ -89,9 +89,10 @@ frappe.gateway_selector.AddressFormProvider = Class.extend({
 form implementation */
 frappe.gateway_selector._generic_embed = Class.extend({
 
-  init: function(gateway, addressForm) {
+  init: function(gateway, addressForm, formData) {
     this.gateway = gateway;
 		this.addressForm = addressForm;
+		this.formData = formData;
   },
 
   /**
@@ -186,14 +187,14 @@ frappe.integration_service.gateway_selector_gateway = Class.extend({
             if ( gateway.is_embedable ) {
               $('#gateway-selector-forms').append('<div id="gateway_option_'+gateway.name+'">'+gateway.embed_form.form+'</div>');
               if ( frappe.gateway_selector[gateway.name + "_embed"] !== undefined ) {
-                base.services[gateway.name] = new frappe.gateway_selector[gateway.name + "_embed"](base.addressForm)
+                base.services[gateway.name] = new frappe.gateway_selector[gateway.name + "_embed"](base.addressForm, gateway.embed_form)
               } else {
-                base.services[gateway.name] = new frappe.gateway_selector._generic_embed(gateway, base.addressForm);
+                base.services[gateway.name] = new frappe.gateway_selector._generic_embed(gateway, base.addressForm, gateway.embed_form);
               }
 
               $('#gateway_option_'+gateway.name).hide();
             } else {
-              base.services[gateway.name] = new frappe.gateway_selector._generic_embed(gateway, base.addressForm);
+              base.services[gateway.name] = new frappe.gateway_selector._generic_embed(gateway, base.addressForm, gateway.embed_form);
             }
           }
 
