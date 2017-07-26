@@ -136,12 +136,45 @@ frappe.gateway_selector._generic_embed = Class.extend({
       args: {
         data: data,
         gateway: this.gateway.name
-      },
-      callback: function(data) {
-        // redirect to gateway page
-        window.location.href = data.message
       }
-    })
+		})
+		.done(function(data, textStatus, xhr) {
+      if(typeof data === "string") data = JSON.parse(data);
+      var status = xhr.statusCode().status;
+
+			var result = data;
+			callback(null, result.message);
+			window.location.href = data.message
+		})
+		.fail(function(xhr, textStatus) {
+      if(typeof data === "string") data = JSON.parse(data);
+      var status = xhr.statusCode().status;
+			var errors = [];
+			if (xhr.responseJSON && xhr.responseJSON._server_messages) {
+        var _server_messages = JSON.parse(xhr.responseJSON._server_messages);
+      }
+
+      var errors = [];
+      if ( _server_messages ) {
+        try {
+          for(var i = 0; i < _server_messages.length; i++) {
+            errors.push("Server Error: " + JSON.parse(_server_messages[i]).message);
+          }
+        } catch(ex) {
+          errors.push(_server_messages);
+          errors.push(ex);
+        }
+      }
+
+      callback({
+        errors: errors,
+        status: status,
+        recoverable: 0,
+        xhr: xhr,
+        textStatus: textStatus
+      }, null);
+		});
+
   }
 })
 
