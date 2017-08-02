@@ -143,8 +143,11 @@ frappe.gateway_selector._generic_embed = Class.extend({
       var status = xhr.statusCode().status;
 
 			var result = data;
-			callback(null, result.message);
 			window.location.href = data.message
+
+			if ( base.gateway.name.toLowerCase() != "paypal" ) {
+				callback(null, result.message);
+			}
 		})
 		.fail(function(xhr, textStatus) {
       if(typeof data === "string") data = JSON.parse(data);
