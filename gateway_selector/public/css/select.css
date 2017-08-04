@@ -20,3 +20,10 @@
   overflow: hidden;
   padding: 0;
 }
+
+.gateway-error {
+	background: #ff5959;
+	color: white;
+	padding: 1em;
+	border: 1px solid #6b0d0d;
+}

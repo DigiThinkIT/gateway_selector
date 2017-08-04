@@ -262,9 +262,16 @@ frappe.integration_service.gateway_selector_gateway = Class.extend({
           console.error(err);
         }
       } else {
+				$('#gateway-selector-error').removeClass('gateway-error').empty();
         base.process(base.request_data, function(err, data) {
           if ( err ) {
-            $('#gateway-selector-error').text(err);
+						if ( (!err.errors || err.errors.length == 0) || err.status == 500 ) {
+							$('#gateway-selector-error').text("There was an internal server error while processing your order. Please contact us or try again later");
+						} else {
+							$('#gateway-selector-error').text(err.errors.join(', '));
+						}
+						$('#gateway-selector-error').addClass('gateway-error');
+
           } else {
             window.location.href = data.redirect_to;
           }
