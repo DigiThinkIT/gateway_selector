@@ -31,7 +31,8 @@ class GatewaySelectorSettings(IntegrationService):
 
 	def get_payment_url(self, **kwargs):
 		proxy = self.build_proxy(**kwargs)
-		url = "./integrations/gateway_selector/{0}"
+		#url = "./integrations/gateway_selector/{0}"
+		url = "./payments/{0}"
 		return get_url(url.format(proxy.get("name" )))
 
 	def build_proxy(self, **kwargs):
@@ -86,10 +87,10 @@ def is_gateway_embedable(name):
 	controller = get_integration_controller(name)
 	return hasattr(controller, "is_embedable") and controller.is_embedable
 
-def is_gateway_available(name, context):
+def is_gateway_available(name, context, is_backend=0):
 	controller = get_integration_controller(name)
 	if hasattr(controller, "is_available"):
-		return controller.is_available(context)
+		return controller.is_available(context, is_backend=is_backend)
 
 	return True
 
@@ -120,14 +121,15 @@ def get_url_from_gateway(gateway, data):
 	return controller.get_payment_url(**data)
 
 @frappe.whitelist(allow_guest=True)
-def get_gateways(context="{}"):
+def get_gateways(context="{}", is_backend=0):
 	"""Gets a list of gateways that can be selected and their embedding information"""
 
 	context = json.loads(context)
+	context['is_backend'] = is_backend
 	gateway_selector = get_integration_controller("Gateway Selector")
 	gateways = []
 	for gateway in gateway_selector.gateways:
-		if is_gateway_available(gateway.service, context):
+		if is_gateway_available(gateway.service, context, is_backend=is_backend):
 			payload = {
 				"name": gateway.service.replace(' ', '_').lower(),
 				"data": { key: gateway.get(key) for key in ['label', 'icon', 'service', 'is_default'] },
@@ -141,19 +143,22 @@ def get_gateways(context="{}"):
 
 	return gateways
 
-def build_embed_context(context):
+def build_embed_context(context, is_backend=False):
 	"""Convenience method that adds gateway information for a page's context"""
 
 	context["data"] = {}
-	gateways = get_gateways()
+	gateways = get_gateways(is_backend=is_backend)
 
 
 	# Build billing address context
 	context["billing_countries"] = [ x for x in frappe.get_list("Country", fields=["country_name", "name"], ignore_permissions=1) ]
+	context["is_backend"] = is_backend
 
 	default_country = frappe.get_value("System Settings", "System Settings", "country")
 	default_country_doc = next((x for x in context["billing_countries"] if x.name == default_country), None)
-	context["addresses"] = frappe.get_all("Address", filters={"customer" : get_current_customer().name, "disabled" : 0}, fields="*")
+	customer = get_current_customer()
+	if customer:
+		context["addresses"] = frappe.get_all("Address", filters={"customer" : customer.name, "disabled" : 0}, fields="*")
 
 	country_idx = context["billing_countries"].index(default_country_doc)
 	context["billing_countries"].pop(country_idx)

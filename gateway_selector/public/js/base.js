@@ -89,10 +89,11 @@ frappe.gateway_selector.AddressFormProvider = Class.extend({
 form implementation */
 frappe.gateway_selector._generic_embed = Class.extend({
 
-  init: function(gateway, addressForm, formData) {
+  init: function(gateway, addressForm, formData, selector) {
     this.gateway = gateway;
 		this.addressForm = addressForm;
 		this.formData = formData;
+		this.selector = selector;
   },
 
   /**
@@ -188,9 +189,10 @@ frappe.integration_service.gateway_selector_gateway = Class.extend({
   current_gateway_name: null,
   on_process: null,
 
-  init: function(context) {
+  init: function(context, is_backend) {
     this._is_enabled = true;
 		this._context = context;
+		this.is_backend = is_backend;
   },
 
   process: function(overrides, callback) {
@@ -214,7 +216,8 @@ frappe.integration_service.gateway_selector_gateway = Class.extend({
         method: "gateway_selector.gateway_selector.doctype.gateway_selector_settings.gateway_selector_settings.get_gateways",
         freeze: 1,
         args: {
-					context: base._context
+					context: base._context,
+					is_backend: base.is_backend
 				},
         callback: function(data) {
 
@@ -223,14 +226,14 @@ frappe.integration_service.gateway_selector_gateway = Class.extend({
             if ( gateway.is_embedable ) {
               $('#gateway-selector-forms').append('<div id="gateway_option_'+gateway.name+'">'+gateway.embed_form.form+'</div>');
               if ( frappe.gateway_selector[gateway.name + "_embed"] !== undefined ) {
-                base.services[gateway.name] = new frappe.gateway_selector[gateway.name + "_embed"](base.addressForm, gateway.embed_form)
+                base.services[gateway.name] = new frappe.gateway_selector[gateway.name + "_embed"](base.addressForm, gateway.embed_form, base)
               } else {
-                base.services[gateway.name] = new frappe.gateway_selector._generic_embed(gateway, base.addressForm, gateway.embed_form);
+                base.services[gateway.name] = new frappe.gateway_selector._generic_embed(gateway, base.addressForm, gateway.embed_form, base);
               }
 
               $('#gateway_option_'+gateway.name).hide();
             } else {
-              base.services[gateway.name] = new frappe.gateway_selector._generic_embed(gateway, base.addressForm, gateway.embed_form);
+              base.services[gateway.name] = new frappe.gateway_selector._generic_embed(gateway, base.addressForm, gateway.embed_form, base);
             }
           }
 
@@ -292,7 +295,16 @@ frappe.integration_service.gateway_selector_gateway = Class.extend({
 
   validate: function() {
     if ( this.current_gateway ) {
-      return this.current_gateway.validate();
+      var result = this.current_gateway.validate();
+			if ( this.is_backend ) {
+				if ( result.valid ) {
+					$('#gateway-selector-continue').removeClass('disabled');
+				} else {
+					$('#gateway-selector-continue').addClass('disabled');
+				}
+			}
+
+			return result;
     }
   },
 
@@ -321,6 +333,8 @@ frappe.integration_service.gateway_selector_gateway = Class.extend({
       this.current_gateway = null;
       this.current_gateway_name = null;
     }
+
+		this.validate();
 
     var $gateway_form = $('#gateway_option_' + name);
     // hide all other gateway forms
