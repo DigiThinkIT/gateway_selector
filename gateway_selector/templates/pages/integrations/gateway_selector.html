@@ -12,13 +12,14 @@
 {% endfor %}
 
 <script>
-	var proxy_gateway = new frappe.integration_service.gateway_selector_gateway();
+	var proxy_gateway = new frappe.integration_service.gateway_selector_gateway({}, {{ is_backend }});
 	proxy_gateway.form({{ data|json }});
 </script>
 {% endblock %}
 
 {%- block page_content -%}
 <div class="container-fluid gateway-selector-form" id="gateway-selector-page-form">
+	<div class="logo"></div>
 	<div class="row nopadding">
 		<div class="col-md-6 col-md-push-6 nopadding">
 			<h2>Payment Details</h2>
@@ -48,6 +49,10 @@
 	<style>
 		header, footer {
 			display: none;
+		}
+		#gateway-selector-page-form {
+			max-width: 1024px;
+			margins: auto;
 		}
 	</style>
 	{% for style in gateway_styles %}

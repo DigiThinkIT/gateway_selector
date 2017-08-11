@@ -17,6 +17,7 @@
 
   <div id="gateway-selector-forms" class="row"></div>
 
+{% if not is_backend %}
   <h2>Billing Address</h2>
   <div class="row">
     <div id="select-bill-addr">
@@ -26,5 +27,6 @@
       {% include "templates/includes/integrations/gateway_selector/billing_address.html" with context %}
     </div>
   </div>
+{% endif %}
 
 </div>
