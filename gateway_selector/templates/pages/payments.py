@@ -5,7 +5,6 @@ from frappe import _
 from frappe.utils import flt, cint
 from frappe.utils.formatters import format_value
 from awesome_cart.compat.customer import get_current_customer
-from frappe.integration_broker.doctype.integration_service.integration_service import get_integration_controller
 from gateway_selector.gateway_selector.doctype.gateway_selector_settings.gateway_selector_settings import is_gateway_embedable, build_embed_context
 
 from dti_devtools.debug import log, pretty_json

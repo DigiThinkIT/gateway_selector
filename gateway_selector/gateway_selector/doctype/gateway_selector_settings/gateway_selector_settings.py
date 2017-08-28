@@ -10,24 +10,26 @@ from frappe.model.document import Document
 from frappe.utils import get_url, call_hook_method, cint, flt
 from urllib import urlencode
 from awesome_cart.compat.customer import get_current_customer
-from frappe.integration_broker.doctype.integration_service.integration_service import IntegrationService, get_integration_controller
+from frappe.integrations.utils import get_payment_gateway_controller
+from frappe.integrations.utils import create_request_log, create_payment_gateway
 
-class GatewaySelectorSettings(IntegrationService):
+class GatewaySelectorSettings(Document):
 	service_name = "Gateway Selector"
 
 	def validate(self):
-		pass
+		create_payment_gateway("Gateway Selector")
+		call_hook_method("payment_gateway_enabled", gateway=self.service_name)
+
 
 	def on_update(self):
 		pass
 
-	def enable(self):
-		call_hook_method("payment_gateway_enabled", gateway=self.service_name)
 
 	def validate_transaction_currency(self, currency):
-		for gateway in self.gateways:
-			controller = get_integration_controller(gateway.service)
-			controller.validate_transaction_currency(currency)
+		pass
+		# for gateway in self.gateways:
+			# controller = get_payment_gateway_controller(gateway.service)
+			# controller.validate_transaction_currency(currency)
 
 	def get_payment_url(self, **kwargs):
 		proxy = self.build_proxy(**kwargs)
@@ -84,11 +86,11 @@ def get_awc_gateway_form(context={}):
 def is_gateway_embedable(name):
 	"""Returns True if the the gateway supports get_embed_form api"""
 
-	controller = get_integration_controller(name)
+	controller = get_payment_gateway_controller(name)
 	return hasattr(controller, "is_embedable") and controller.is_embedable
 
 def is_gateway_available(name, context, is_backend=0):
-	controller = get_integration_controller(name)
+	controller = get_payment_gateway_controller(name)
 	if hasattr(controller, "is_available"):
 		return controller.is_available(context, is_backend=is_backend)
 
@@ -97,7 +99,7 @@ def is_gateway_available(name, context, is_backend=0):
 def get_gateway_embed_form(name, context={}):
 	"""Gets the gateway's embedable form information"""
 
-	controller = get_integration_controller(name)
+	controller = get_payment_gateway_controller(name)
 	return controller.get_embed_form(context=context)
 
 @frappe.whitelist(allow_guest=True)
@@ -107,7 +109,7 @@ def get_url_from_gateway(gateway, data):
 	if isinstance(data, unicode) or isinstance(data, str):
 		data = json.loads(data)
 
-	gateway_selector = get_integration_controller("Gateway Selector")
+	gateway_selector = get_payment_gateway_controller("Gateway Selector")
 
 	for g in gateway_selector.gateways:
 		if g.service.replace(' ', '_').lower() == gateway:
@@ -116,7 +118,7 @@ def get_url_from_gateway(gateway, data):
 	else:
 		gateway_name = None
 
-	controller = get_integration_controller(gateway_name)
+	controller = get_payment_gateway_controller(gateway_name)
 
 	return controller.get_payment_url(**data)
 
@@ -126,7 +128,7 @@ def get_gateways(context="{}", is_backend=0):
 
 	context = json.loads(context)
 	context['is_backend'] = is_backend
-	gateway_selector = get_integration_controller("Gateway Selector")
+	gateway_selector = get_payment_gateway_controller("Gateway Selector")
 	gateways = []
 	for gateway in gateway_selector.gateways:
 		if is_gateway_available(gateway.service, context, is_backend=is_backend):
