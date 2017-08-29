@@ -7,11 +7,10 @@ import frappe
 import json
 from frappe import _dict
 from frappe.model.document import Document
-from frappe.utils import get_url, call_hook_method, cint, flt
-from urllib import urlencode
+from frappe.utils import get_url, call_hook_method
 from awesome_cart.compat.customer import get_current_customer
 from frappe.integrations.utils import get_payment_gateway_controller
-from frappe.integrations.utils import create_request_log, create_payment_gateway
+from frappe.integrations.utils import create_payment_gateway
 
 class GatewaySelectorSettings(Document):
 	service_name = "Gateway Selector"
