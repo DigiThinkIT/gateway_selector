@@ -11,14 +11,19 @@
   margin-top: 1em;
 }
 
+#gateway-selector-continue.paypal:hover,
 #gateway-selector-continue.paypal {
   display: inline-block;
-  background: url(https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-medium.png) center center no-repeat transparent;
+  background: url(https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-medium.png) center center no-repeat transparent !important;
   width: 170px;
   height: 32px;
   text-indent: -10000000em;
   overflow: hidden;
   padding: 0;
+}
+
+#gateway-selector-continue.paypal:hover {
+	border: 1px solid red;
 }
 
 .gateway-error {
