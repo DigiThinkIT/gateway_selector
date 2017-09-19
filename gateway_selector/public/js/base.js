@@ -44,15 +44,15 @@ frappe.gateway_selector.AddressFormProvider = Class.extend({
 				this.data.pincode = $form.find('input[name="pincode"]').val();
 				this.data.country = $form.find('select[name="country"] option:checked').attr('value');
 		} else {
-				this.data.billing_address = $('#billing-addrs div.selected').attr('data-name');
-				this.data.title = $('#billing-addrs .selected span#title strong').text();
-        this.data.phone = $('#billing-addrs .selected span#phone').text();
-				this.data.address_1 = $('#billing-addrs .selected span#line1').text();
-				this.data.address_2 = $('#billing-addrs .selected span#line2').text();
-				this.data.city = $('#billing-addrs .selected span#city').text();
-				this.data.state = $('#billing-addrs .selected span#state').text();
-				this.data.pincode = $('#billing-addrs .selected span#postal_code').text();
-				this.data.country = $('#billing-addrs .selected span#country').text();
+				this.data.billing_address = $('#awc-billing-addrs div.awc-selected').attr('data-name');
+				this.data.title = $('#awc-billing-addrs .awc-selected span#title strong').text();
+				this.data.phone = $('#awc-billing-addrs .awc-selected span#phone').text();
+				this.data.address_1 = $('#awc-billing-addrs .awc-selected span#line1').text();
+				this.data.address_2 = $('#awc-billing-addrs .awc-selected span#line2').text();
+				this.data.city = $('#awc-billing-addrs .awc-selected span#city').text();
+				this.data.state = $('#awc-billing-addrs .awc-selected span#state').text();
+				this.data.pincode = $('#awc-billing-addrs .awc-selected span#postal_code').text();
+				this.data.country = $('#awc-billing-addrs .awc-selected span#country').text();
 		}
 
 		$form.trigger('address_change', this.data);
@@ -254,7 +254,7 @@ frappe.integration_service.gateway_selector_gateway = Class.extend({
     })
 
     $('#gateway-selector-continue').click(function() {
-
+	  $('html, body').animate({ scrollTop: $('#awc-forms').offset().top - 60 }, 'slow');
       if ( !base._is_enabled ) {
         return;
       }
