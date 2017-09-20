@@ -254,7 +254,8 @@ frappe.integration_service.gateway_selector_gateway = Class.extend({
     })
 
     $('#gateway-selector-continue').click(function() {
-	  $('html, body').animate({ scrollTop: $('#awc-forms').offset().top - 60 }, 'slow');
+
+	  $('html, body').animate({ scrollTop: $('#awc-forms, #gateway-selector-forms').first().offset().top - 60 }, 'slow');
       if ( !base._is_enabled ) {
         return;
       }
