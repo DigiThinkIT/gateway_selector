@@ -20,8 +20,8 @@
 {% if not is_backend %}
   <h2>Billing Address</h2>
   <div class="row">
-    <div id="awc-select-bill-addr">
-      {% include "templates/includes/integrations/gateway_selector/billing_address_select.html" with context %}
+    <div id="select-bill-addr">
+      <div id="billing-addrs"></div>
     </div>
     <div id="form-bill-addr" style="display: none;">
       {% include "templates/includes/integrations/gateway_selector/billing_address.html" with context %}
