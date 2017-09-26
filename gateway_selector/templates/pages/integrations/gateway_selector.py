@@ -6,7 +6,6 @@ from frappe.utils import flt, cint
 from frappe.utils.formatters import format_value
 from awesome_cart.compat.customer import get_current_customer
 from awesome_cart.session import get_awc_session, set_awc_session
-from frappe.integration_broker.doctype.integration_service.integration_service import get_integration_controller
 from gateway_selector.gateway_selector.doctype.gateway_selector_settings.gateway_selector_settings import is_gateway_embedable, build_embed_context
 from gateway_selector import payments
 import json
@@ -26,8 +25,6 @@ def get_context(context):
 
 	awc_session = get_awc_session()
 	pr_access = awc_session.get("gateway_selector_pr_access")
-
-	print(pretty_json(awc_session))
 
 	# or from pathname, this works better for redirection on auth errors
 	if not proxy_name:
@@ -75,11 +72,6 @@ def get_context(context):
 
 		default_country = frappe.get_value("System Settings", "System Settings", "country")
 		default_country_doc = next((x for x in context["billing_countries"] if x.name == default_country), None)
-
-		customer = get_current_customer()
-
-		if customer:
-			context["addresses"] = frappe.get_all("Address", filters={"customer" : customer.name, "disabled" : 0, "address_type" : "Billing"}, fields="*")
 
 		country_idx = context["billing_countries"].index(default_country_doc)
 		context["billing_countries"].pop(country_idx)
