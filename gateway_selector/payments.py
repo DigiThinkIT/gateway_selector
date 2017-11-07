@@ -10,12 +10,12 @@ ERROR_NOT_AVAILABLE=102
 @frappe.whitelist(allow_guest=True)
 def login(payment_request_name, payment_reference):
 
-	pr = frappe.get_doc("Payment Request", payment_request_name)
+	pr = frappe.get_doc("Payment Request", payment_request_name.strip().upper())
 
 	if pr.get("status") != "Initiated":
 		return "This Payment Request was Already Fulfilled"
 
-	if pr.reference_name == payment_reference:
+	if pr.reference_name.strip().upper() == payment_reference.strip().upper():
 
 		awc_session = get_awc_session()
 		awc_session["gateway_selector_pr_access"] = pr.name
