@@ -41,7 +41,7 @@ frappe.gateway_selector.AddressFormProvider = Class.extend({
 				this.data.address_2 = $form.find('input[name="address_2"]').val();
 				this.data.city = $form.find('input[name="city"]').val();
 				this.data.state = $form.find('input[name="state"]').val();
-				this.data.pincode = $form.find('input[name="pincode"]').val();
+				this.data.pincode = $form.find('input[name="pincode"]').val() || "00000";
 				this.data.country = $form.find('select[name="country"] option:checked').attr('value');
 		} else {
 				this.data.billing_address = $('#awc-billing-addrs div.awc-selected').attr('data-name');
@@ -51,7 +51,7 @@ frappe.gateway_selector.AddressFormProvider = Class.extend({
 				this.data.address_2 = $('#awc-billing-addrs .awc-selected span#line2').text();
 				this.data.city = $('#awc-billing-addrs .awc-selected span#city').text();
 				this.data.state = $('#awc-billing-addrs .awc-selected span#state').text();
-				this.data.pincode = $('#awc-billing-addrs .awc-selected span#postal_code').text();
+				this.data.pincode = $('#awc-billing-addrs .awc-selected span#postal_code').text() || "00000";
 				this.data.country = $('#awc-billing-addrs .awc-selected span#country').text();
 		}
 
