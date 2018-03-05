@@ -101,19 +101,14 @@ frappe.gateway_selector._generic_embed = Class.extend({
    */
   show: function() {
     $('#gateway-selector-continue').text("Continue with " + this.gateway.label);
-    if ( this.gateway.name.toLowerCase() == "paypal" ) {
-      $('#gateway-selector-continue').addClass('paypal');
-    }
+    $('#gateway-selector-continue').addClass(this.gateway.name);
   },
 
   /**
    * Called when the form is hidden
    */
   hide: function() {
-    if ( this.gateway.name.toLowerCase() == "paypal" ) {
-      $('#gateway-selector-continue').removeClass('paypal');
-    }
-
+    $('#gateway-selector-continue').removeClass(this.gateway.name);
   },
 
   /**
