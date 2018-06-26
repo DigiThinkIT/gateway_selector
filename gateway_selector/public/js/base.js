@@ -126,6 +126,8 @@ frappe.gateway_selector._generic_embed = Class.extend({
   },
 
   process: function(data, callback) {
+    var base = this;
+
     // trigger payment gateway to use
     frappe.call({
       method: "gateway_selector.gateway_selector.doctype.gateway_selector_settings.gateway_selector_settings.get_url_from_gateway",
@@ -142,7 +144,9 @@ frappe.gateway_selector._generic_embed = Class.extend({
 			window.location.href = data.message
 
 			if ( base.gateway.name.toLowerCase() != "paypal" ) {
-				callback(null, result.message);
+        if (!base.gateway.muteProcessingCallback) {
+          callback(null, result.message);
+        }
 			}
 		})
 		.fail(function(xhr, textStatus) {
