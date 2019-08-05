@@ -59,7 +59,6 @@ def get_context(context):
 		raise frappe.Redirect
 
 	if not pr_access and frappe.session.user == 'Guest':
-		print("Guest user")
 		frappe.throw(_("You need to be logged in to access this page"), frappe.PermissionError)
 
 	context["is_backend"]=1
@@ -67,6 +66,9 @@ def get_context(context):
 
 	if proxy_name and proxy:
 		context["data"] = { key: proxy.get(key) for key in expected_keys }
+		context["data"]["proxy_name"] = proxy.name
+		context["data"]["reference_doctype"] = "Gateway Selector Proxy"
+		context["data"]["reference_docname"] = proxy.name
 
 		context["billing_countries"] = [ x for x in frappe.get_list("Country", fields=["country_name", "name"], ignore_permissions=1) ]
 

@@ -5,8 +5,6 @@ frappe.gateway_selector.AddressFormProvider = Class.extend({
 	init: function($form) {
 		this.data = {};
 		this.$form = $form;
-
-		console.log("address form initialized")
 	},
 
 	form: function() {
@@ -157,7 +155,6 @@ frappe.gateway_selector._generic_embed = Class.extend({
         var _server_messages = JSON.parse(xhr.responseJSON._server_messages);
       }
 
-      var errors = [];
       if ( _server_messages ) {
         try {
           for(var i = 0; i < _server_messages.length; i++) {
@@ -196,8 +193,55 @@ frappe.integration_service.gateway_selector_gateway = Class.extend({
 
   process: function(overrides, callback) {
     if ( this.current_gateway ) {
-      this.current_gateway.collect();
-      this.current_gateway.process(overrides, callback);
+      let processCall = () => {
+        this.current_gateway.collect();
+        this.current_gateway.process(overrides, callback);
+      };
+
+      // fuggly way of updating gateway proxy record with gateway selection.
+      // we first update the record, wait, then do the actual processing.
+      if ( this.request_data.proxy_name ) {
+        frappe.call({
+          method: "gateway_selector.gateway_selector.doctype.gateway_selector_settings.gateway_selector_settings.update_proxy_gateway",
+          args: {
+            name: this.request_data.proxy_name,
+            gateway_service: this.current_gateway_name
+          }
+        })
+        .done(() => processCall())
+        .fail((xhr, textStatus) => {
+          if(typeof data === "string") data = JSON.parse(data);
+          let status = xhr.statusCode().status;
+          let _server_messages = false;
+          let errors = [];
+          if (xhr.responseJSON && xhr.responseJSON._server_messages) {
+            _server_messages = JSON.parse(xhr.responseJSON._server_messages);
+          }
+    
+          if ( _server_messages ) {
+            try {
+              for(let i = 0; i < _server_messages.length; i++) {
+                errors.push("Server Error: " + JSON.parse(_server_messages[i]).message);
+              }
+            } catch(ex) {
+              errors.push(_server_messages);
+              errors.push(ex);
+            }
+          }
+
+          callback({
+            errors: errors,
+            status: status,
+            recoverable: 0,
+            xhr: xhr,
+            textStatus: textStatus
+          }, null);
+    
+        });
+      } else {
+        processCall();
+      }
+
     }
   },
 
