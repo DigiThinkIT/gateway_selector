@@ -41,6 +41,14 @@ class GatewaySelectorSettings(Document):
 			"doctype": "Gateway Selector Proxy"
 		}
 		data.update(kwargs)
+
+		# When a PR request is built system references order_id as the PR itself
+		# here we are checking if we have a Payment Request to update the proxy's
+		# order_id field to match the PR doctype's name
+		if kwargs.get("reference_doctype") == 'Payment Request':
+			pr = frappe.get_doc("Payment Request", kwargs.get("reference_docname"))
+			data.update({ "order_id": pr.reference_name })
+
 		proxy = frappe.get_doc(data)
 
 		proxy.flags.ignore_permissions = 1
@@ -173,3 +181,8 @@ def build_embed_context(context, is_backend=False):
 		if gateway.get('embed_form'):
 			context["gateway_scripts"].append(gateway.get('embed_form').get("script_url"))
 			context["gateway_styles"].append(gateway.get('embed_form').get("style_url"))
+
+@frappe.whitelist()
+def update_proxy_gateway(name, gateway_service):
+	frappe.db.set_value('Gateway Selector Proxy', name, 'gateway_service', gateway_service)
+	frappe.db.commit()
