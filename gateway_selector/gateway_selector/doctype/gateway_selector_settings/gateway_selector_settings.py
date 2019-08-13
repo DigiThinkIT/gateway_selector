@@ -182,7 +182,7 @@ def build_embed_context(context, is_backend=False):
 			context["gateway_scripts"].append(gateway.get('embed_form').get("script_url"))
 			context["gateway_styles"].append(gateway.get('embed_form').get("style_url"))
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def update_proxy_gateway(name, gateway_service):
 	frappe.db.set_value('Gateway Selector Proxy', name, 'gateway_service', gateway_service)
 	frappe.db.commit()
