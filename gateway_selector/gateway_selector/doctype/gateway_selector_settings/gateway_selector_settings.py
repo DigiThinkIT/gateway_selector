@@ -113,7 +113,7 @@ def get_gateway_embed_form(name, context={}):
 def get_url_from_gateway(gateway, data):
 	"""Gets the gateway url when deferring gateways that can not be embeded"""
 
-	if isinstance(data, unicode) or isinstance(data, str):
+	if isinstance(data, str):
 		data = json.loads(data)
 
 	gateway_selector = get_payment_gateway_controller("Gateway Selector")
