@@ -1,9 +1,8 @@
-from __future__ import unicode_literals, absolute_import
-
 import frappe
 
 no_cache = 1
 no_sitemap = 1
+
 
 def get_context(context):
 	context["no_cache"] = 1
@@ -23,13 +22,13 @@ def get_context(context):
 		except:
 			proxy = None
 
-	if isinstance(payment_request_name, unicode):
+	if isinstance(payment_request_name, str):
 		payment_request_name = payment_request_name.strip().upper()
 
 	context["payment_request_name"] = form.get("payment_request_name", payment_request_name)
 	context["payment_reference"] = form.get("payment_reference")
 
-	if isinstance(context["payment_reference"], unicode):
+	if isinstance(context["payment_reference"], str):
 		context["payment_reference"] = context["payment_reference"].strip().upper()
 
 	return context
